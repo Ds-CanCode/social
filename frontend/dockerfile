@@ -1,0 +1,32 @@
+# Use Node.js for building
+FROM node:18 AS builder
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copy all source code
+COPY . .
+
+# Build Next.js app
+RUN npm run build
+
+# Use a lightweight Node.js image for production
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy built app
+COPY --from=builder /app ./
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Expose the frontend port
+EXPOSE 3000
+
+# Start the Next.js app
+CMD ["npm", "run", "start"]

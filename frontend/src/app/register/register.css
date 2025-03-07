@@ -1,0 +1,307 @@
+/* app/register/register.css */
+
+.register-container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.background-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: pulse 4s infinite;
+}
+
+.shape-1 {
+  top: 60%;
+  left: 70%;
+  width: 300px;
+  height: 300px;
+  background: rgba(79, 248, 104, 0.3);
+}
+
+.shape-2 {
+  bottom: 60%;
+  right: 70%;
+  width: 300px;
+  height: 300px;
+  background: rgba(79, 248, 104, 0.2);
+  animation-delay: 2s;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.05); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
+
+.background-glow {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, 
+    rgba(79, 248, 104, 0.1) 0%,
+    rgba(79, 248, 104, 0.05) 25%,
+    transparent 50%);
+  pointer-events: none;
+}
+
+
+.register-card {
+  width: 100%;
+  max-width: 500px;
+  background: rgba(20, 20, 20, 0);
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+
+  padding: 2rem;
+  position: relative;
+  
+  /* border: 1px solid rgba(79, 248, 104, 0.212); */
+  box-shadow: 0 0 40px rgba(79, 248, 104, 0.212);
+  backdrop-filter: blur(10px);
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4FF868, #28A745);
+  transition: width 0.3s ease-in-out;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.register-header h1 {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.register-header p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+.info-lable {
+  color: rgba(255, 255, 255, 0.6);
+  font-size:16px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-glow {
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(90deg, #4FF868, #28A745);
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: azure;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  resize: none;
+}
+input::placeholder , textarea::placeholder{
+  color: #ccc;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: #28A745;
+}
+
+input:focus + .input-glow,
+textarea:focus + .input-glow {
+  opacity: 0.5;
+}
+
+.optional {
+  opacity: 0.3;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+  pointer-events: none;
+}
+
+.optional.revealed {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.file-input-wrapper {
+  margin-top: 1rem;
+}
+
+.file-input-wrapper label {
+  display: block;
+  color:  white;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(90deg, #4FF868, #28A745);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.button-glow {
+  position: absolute;
+  inset: -5px;
+  background: linear-gradient(90deg, #4FF868, #28A745);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(20px);
+  z-index: -1;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+}
+
+.submit-button:hover .button-glow {
+  opacity: 0.5;
+}
+
+@media (max-width: 640px) {
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .register-card {
+    padding: 1.5rem;
+  }
+}
+
+.error-msg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #FF0000;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Add these styles to your register.css file */
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 1;
+}
+
+.input-wrapper input {
+  padding-left: 40px;
+}
+
+.input-wrapper textarea {
+  padding-left: 16px; /* Reset padding for textarea */
+}
+
+.error-msg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.error-icon {
+  color: #ff4444;
+}
+
+.info-icon {
+  margin-right: 8px;
+}
+
+.file-icon {
+  margin-right: 8px;
+}
+
+.spinner-icon {
+  margin-right: 8px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Ensure icons don't appear in date input when calendar is shown */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+  margin-right: 8px;
+}

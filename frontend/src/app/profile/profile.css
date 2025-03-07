@@ -1,0 +1,554 @@
+/* Main Container */
+.profile-hero {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #111827;
+}
+
+.profile-container {
+  position: relative;
+  width: min(100%, calc(100% - 500px));
+  margin-left: 250px;
+  min-height: calc(100vh - 64px);
+  padding: clamp(1rem, 3vw, 2rem);
+  margin-top: 64px;
+  backdrop-filter: blur(10px);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+/* Profile Header Section */
+.profile-header {
+  position: relative;
+  padding: clamp(0.75rem, 2vw, 1rem);
+  height: auto;
+  min-height: 230px;
+  border-radius: 12px;
+  border: 1px solid rgba(79, 248, 104, 0.2);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  transition: all 0.3s ease;
+}
+
+.profile-cover {
+  height: 200px;
+  border-radius: 8px;
+  background: linear-gradient(45deg, rgba(79, 248, 104, 0.1), rgba(40, 167, 69, 0.1));
+  margin-bottom: -100px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-cover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(45deg, #4FF868, #28A745);
+  opacity: 0.1;
+  filter: blur(50px);
+}
+
+/* User Profile Info */
+.user_profile-info {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(1rem, 2vw, 2rem);
+  padding: 0 clamp(0.5rem, 1vw, 1rem);
+}
+
+.user_profile-avatar {
+  width: clamp(80px, 10vw, 100px);
+  height: clamp(80px, 10vw, 100px);
+  flex-shrink: 0;
+  border-radius: 12px;
+  border: 3px solid rgba(79, 248, 104, 0.3);
+  background: linear-gradient(45deg, rgba(79, 248, 104, 0.2), rgba(40, 167, 69, 0.2));
+  position: relative;
+  overflow: hidden;
+}
+
+.user_profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-details {
+  flex: 1;
+  min-width: 250px;
+}
+
+.profile-name-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-name {
+  font-size: clamp(1.5rem, 3vw, 1.8rem);
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.profile-bio {
+  color: #a0aec0;
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  line-height: 1.5;
+}
+
+/* Profile Actions */
+.profile-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.edit-profile, 
+.settings-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(79, 248, 104, 0.3);
+  background: rgba(79, 248, 104, 0.1);
+  color: #4FF868;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+.settings-button {
+  padding: 0.5rem;
+}
+
+.edit-profile:hover, 
+.settings-button:hover {
+  background: rgba(79, 248, 104, 0.2);
+  border-color: rgba(79, 248, 104, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Stats Section */
+.profile-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(0.75rem, 2vw, 1rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+}
+
+.stat-card {
+  border: 1px solid rgba(79, 248, 104, 0.2);
+  border-radius: 12px;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  text-align: center;
+  transition: all 0.3s ease;
+  background: rgba(79, 248, 104, 0.05);
+}
+
+.stat-card:hover {
+  border-color: rgba(79, 248, 104, 0.4);
+  transform: translateY(-2px);
+  background: rgba(79, 248, 104, 0.1);
+}
+
+.stat-value {
+  display: block;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  color: #4FF868;
+  margin-bottom: 0.25rem;
+}
+
+.stat-label {
+  color: #a0aec0;
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+}
+
+/* Content Section */
+.content-section {
+  border: 1px solid rgba(79, 248, 104, 0.2);
+  border-radius: 12px;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  background: rgba(79, 248, 104, 0.01);
+
+}
+
+.section-title {
+  font-size: clamp(1.125rem, 2vw, 1.25rem);
+  color: #fff;
+  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+}
+.created-Posts {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  /* flex-wrap: wrap; */
+  /* grid-template-columns: repeat(2, 1fr); */
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+  .profile-container {
+    width: calc(100% - 250px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .user_profile-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .profile-actions {
+    margin: 1rem auto 0;
+  }
+  .created-Posts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    width: 100%;
+    margin-left: 0;
+    padding: 1rem;
+  }
+  
+  .profile-header {
+    margin-bottom: 1rem;
+  }
+  
+  .user_profile-avatar {
+    margin-top: -100px;
+  }
+  
+  .profile-details {
+    min-width: 100%;
+  }
+  
+  .profile-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .created-Posts {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .created-Posts {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-name-section {
+    justify-content: center;
+  }
+  
+  .profile-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  .created-Posts {
+    grid-template-columns: 1fr;
+  }
+}
+/* *********** settings css ********** */
+/* Overlay */
+.setting-popup-overlay {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 150px;
+  top: 10%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Popup */
+.settings-popup {
+  width: 90%;
+  max-width: 400px;
+  background: #1a1f2b;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(79, 248, 104, 0.3);
+  color: white;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Popup Content */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  text-align: center;
+}
+
+.settings-content h2 {
+  font-size: 1.2rem;
+  color: #4FF868;
+  margin: 0;
+}
+
+/* Radio Button Group */
+.setting-radio-group {
+  display: flex;
+  justify-content: center;
+  
+  gap: 20px;
+}
+
+.setting-radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.setting-radio-group input[type="radio"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #4FF868;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+}
+
+.setting-radio-group input[type="radio"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #4FF868;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+/* Submit Button */
+.submit-settings {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #4FF868;
+  color: #111827;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 10px;
+}
+
+.submit-settings:hover {
+  background: #43e769;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .settings-popup {
+    width: 95%;
+    padding: 15px;
+  }
+}
+
+/* ******** followers pop over ****************/
+/* Followers & Following Popover Styles */
+.followers-popover, .following-popover {
+  position: absolute;
+  /* top: 50%; */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 350px;
+  max-height: 450px;
+  background: #1a2235;
+  border-radius: 12px;
+  border: 1px solid rgba(79, 248, 104, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  overflow: hidden;
+  color: white;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.followers-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(79, 248, 104, 0.1);
+}
+
+.followers-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #4FF868;
+}
+
+.close-popover {
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.close-popover:hover {
+  color: #4FF868;
+}
+
+.followers-list {
+  overflow-y: scroll;
+  max-height: 380px;
+  padding: 10px 0;
+}
+
+.followers-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.followers-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.followers-list::-webkit-scrollbar-thumb {
+  background: rgba(79, 248, 104, 0.3);
+  border-radius: 3px;
+}
+
+.follower-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.follower-item:hover {
+  background-color: rgba(79, 248, 104, 0.05);
+}
+
+.follower-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 15px;
+  border: 2px solid rgba(79, 248, 104, 0.2);
+}
+
+.follower-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.follower-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.follower-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 3px;
+}
+
+.follower-username {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.no-followers {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Make stat cards clickable */
+.stat-card[data-type="followers"],
+.stat-card[data-type="following"] {
+  cursor: pointer;
+  position: relative;
+}
+
+.stat-card[data-type="followers"]:hover,
+.stat-card[data-type="following"]:hover {
+  background: rgba(79, 248, 104, 0.05);
+}
+
+.stat-card[data-type="followers"]::after,
+.stat-card[data-type="following"]::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: #4FF868;
+  transition: width 0.3s ease;
+}
+
+.stat-card[data-type="followers"]:hover::after,
+.stat-card[data-type="following"]:hover::after {
+  width: 50%;
+}
+
+/* Overlay for when popover is active */
+.profile-hero.popover-active::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 900;
+}

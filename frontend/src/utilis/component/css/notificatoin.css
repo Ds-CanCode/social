@@ -1,0 +1,45 @@
+.popup-Notif {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    background: rgba(79, 248, 104, 0.2);
+    border-left: 4px solid #4CAF50;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 16px 24px;
+    border-radius: 4px;
+    z-index: 7000;
+    max-width: 400px;
+    height: 60px;
+    animation: slideIn 0.3s ease-out forwards;
+  }
+  
+  .popup-Notif p {
+    margin: 0;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+  }
+  
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  
+  .popup-Notif.closing {
+    animation: fadeOut 0.3s ease-in forwards;
+  }

@@ -1,0 +1,37 @@
+# Step 1: Use a Go base image to build the application
+FROM golang:1.23 AS build
+
+# Step 2: Set the working directory
+WORKDIR /app
+
+# Step 3: Copy Go module files and download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Step 4: Copy the Go application code
+COPY . .
+
+# Step 5: Build the Go application
+RUN GOOS=linux GOARCH=amd64 go build -o server .
+
+# Step 6: Use Ubuntu 22.04 which has GLIBC 2.35
+FROM ubuntu:22.04
+
+# Step 7: Install SQLite3 and other dependencies
+RUN apt-get update && \
+    apt-get install -y libc6 sqlite3 ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Step 8: Set the working directory
+WORKDIR /app
+
+# Step 9: Copy the compiled Go binary from the build stage
+COPY --from=build /app/server .
+COPY . . 
+
+# Step 10: Expose the necessary port for the backend service
+EXPOSE 8080
+
+# Step 11: Command to run the Go application when the container starts
+CMD ["./server"]
