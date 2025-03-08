@@ -22,6 +22,7 @@ func InsertPost(post POST) error {
 	VALUES(?,?,?,?,?,?,?)`
 	result, err := tx.Exec(query, post.Creator.Id, post.GroupId, post.Title, post.Content, post.Path, post.Type, time.Now())
 	if err != nil {
+		fmt.Println(err)
 		tx.Rollback()
 		return err
 	}
@@ -92,10 +93,10 @@ func GroupPost(id, groupID int) []POST {
 	return posts
 }
 
-func getFeedPosts(id int) ([]POST, error) {
+func getFeedPosts(id,offset  int) ([]POST, error) {
 	var posts []POST
 	db := database.GetDb()
-	rows, err := db.Query(feedQuery, id, id, id, id, id, id)
+	rows, err := db.Query(feedQuery, id, id, id ,  offset )
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = nil
@@ -300,26 +301,29 @@ func IsLiked(postId, userId int) (int, error) {
 // 						ORDER BY p.createdAt DESC;
 // `
 
-const feedQuery string = `SELECT DISTINCT p.*
-FROM posts p
-INNER JOIN users u ON p.user_id = u.id
-WHERE 
-    ((p.types = 'public' AND u.profileType = 0 )OR p.user_id = ?)
-    OR 
-    (p.types = 'private' AND EXISTS (
-        SELECT 1 FROM folowers f 
-        WHERE f.user1 = ? AND f.user2 = p.user_id
-        AND f.accepted = 1
-    ))
-    OR 
-    (p.types = 'semi-public' AND EXISTS (
-        SELECT 1 FROM allowedUsersPost aup
-        WHERE aup.user_id = ?
-        AND aup.post_id = p.id
-    ))
-    
-ORDER BY p.createdAt DESC;
-
+const feedQuery string = `
+SELECT * FROM (
+    SELECT p.*
+    FROM posts p
+    INNER JOIN users u ON p.user_id = u.id
+    WHERE 
+        ((p.types = 'public' AND u.profileType = 0 ) OR p.user_id = ?)
+        OR 
+        (p.types = 'private' AND EXISTS (
+            SELECT 1 FROM folowers f 
+            WHERE f.user1 = ? AND f.user2 = p.user_id
+            AND f.accepted = 1
+        ))
+        OR 
+        (p.types = 'semi-public' AND EXISTS (
+            SELECT 1 FROM allowedUsersPost aup
+            WHERE aup.user_id = ?
+            AND aup.post_id = p.id
+        ))
+    ORDER BY p.createdAt DESC
+    LIMIT 100
+) subquery
+LIMIT 1 OFFSET ?;
 `
 
 // OR

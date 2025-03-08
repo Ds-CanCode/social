@@ -13,6 +13,19 @@ import { useEffect, useState, useRef, use } from "react";
 import "./css/display_post.css";
 import Link from "next/link";
 
+// Throttle function to limit function calls
+function throttle(func, delay) {
+  let lastCall = 0;
+  return function(...args) {
+    const now = new Date().getTime();
+    if (now - lastCall < delay) {
+      return;
+    }
+    lastCall = now;
+    return func(...args);
+  };
+}
+
 //****************** Create Post Component: a function that displays a single post ***********************/
 
 export function Post({ post }) {
@@ -20,9 +33,10 @@ export function Post({ post }) {
   const [comments, setComments] = useState([]);
   const [likes, setLikes] = useState(post.likes);
   const [dislikes, setDislikes] = useState(post.dislikes);
-  // const [commentReactions, setCommentReactions] = useState({});
-  // const [commentLike, setCommentLike] = useState(null)
-  // const [commentDislike, setCommentDislike] = useState(null)
+  const [isLoading, setIsLoading] = useState(false);
+
+  
+
   const [image, setImage] = useState(null);
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -51,7 +65,9 @@ export function Post({ post }) {
 
   const handleSubmitComment = async (e) => {
     e.preventDefault();
-    if (!formComments.content.trim()) return;
+    if (!formComments.content.trim() || isLoading) return;
+    
+    setIsLoading(true);
     const newCommentForm = new FormData();
     newCommentForm.append("post_id", formComments.postId);
     newCommentForm.append("content", formComments.content);
@@ -82,10 +98,16 @@ export function Post({ post }) {
       setComments([data, ...comments]);
     } catch (error) {
       console.error("Error submitting comment:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleRect = async (Id, type) => {
+  // Throttled reaction handlers
+  const handleReact = throttle(async (Id, type) => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
       const response = await fetch(`/api/reactPost/add`, {
         method: "post",
@@ -102,10 +124,15 @@ export function Post({ post }) {
       }
     } catch (error) {
       console.error("Error liking post:", error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, 500); // 500ms throttle delay
 
-  const handleCommentRect = async (Id, CommentId, type, current) => {
+  const handleCommentReact = throttle(async (Id, CommentId, type, current) => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
       const response = await fetch(`/api/reactComment/add`, {
         method: "post",
@@ -114,7 +141,6 @@ export function Post({ post }) {
       });
 
       if (response.status === 200) {
-
         const updatedComments = comments.map(comment => {
           if (comment.id === CommentId) {
             let updatedLikes = comment.likes;
@@ -126,11 +152,11 @@ export function Post({ post }) {
                 updatedLikes += 1
               } else if (updatedLikes > 0 && current == 'LIKE') {
                 updatedLikes -= 1
-              } else  if (updatedDislikes > 0 && current == 'DISLIKE') {
+              } else if (updatedDislikes > 0 && current == 'DISLIKE') {
                 updatedLikes += 1
                 updatedDislikes -= 1
               }
-            } else if (type === 'DISLIKE')  {
+            } else if (type === 'DISLIKE') {
               if (current == '') {
                 updatedDislikes += 1
               } else if (updatedDislikes > 0 && current == 'DISLIKE') {
@@ -141,7 +167,6 @@ export function Post({ post }) {
               }
             }
          
-        
             return {
               ...comment,
               likes: updatedLikes,
@@ -156,11 +181,15 @@ export function Post({ post }) {
       }
     } catch (error) {
       console.error("Error liking post:", error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, 500); // 500ms throttle delay
 
-
-  const getCurrent = async (commentId, type) => {
+  const getCurrent = throttle(async (commentId, type) => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
       const response = await fetch(`/api/reactComment/getCurrent?commentId=${commentId}`, {
         method: "post",
@@ -170,19 +199,24 @@ export function Post({ post }) {
       if (response.status === 200) {
         const data = await response.json();
         if (type === "LIKE") {
-          handleCommentRect(post.id, commentId, "LIKE" , data.currentReact);
+          handleCommentReact(post.id, commentId, "LIKE", data.currentReact);
         } else if (type === "DISLIKE") {
-          handleCommentRect(post.id, commentId, "DISLIKE", data.currentReact);
+          handleCommentReact(post.id, commentId, "DISLIKE", data.currentReact);
         }
       } else {
         console.log("Failed to like post");
       }
     } catch (error) {
       console.error("Error liking post:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  }, 500); // 500ms throttle delay
 
-  const getComments = async (postId) => {
+  const getComments = throttle(async (postId) => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
       const data = await fetchUserInfo(`api/comment/get?PostId=${postId}`);
       if (data) {
@@ -190,8 +224,10 @@ export function Post({ post }) {
       }
     } catch (error) {
       console.error("Error fetching comments:", error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, 1000); // 1000ms throttle delay for comments loading
 
   return (
     <article className="post">
@@ -243,21 +279,24 @@ export function Post({ post }) {
 
       <div className="post-actions">
         <button
-          onClick={() => handleRect(post.id, "LIKE")}
-          className="action-button"
+          onClick={() => handleReact(post.id, "LIKE")}
+          className={`action-button ${isLoading ? "disabled" : ""}`}
+          disabled={isLoading}
         >
           <FontAwesomeIcon icon={faThumbsUp} />
           <span>{likes}</span>
         </button>
         <button
-          onClick={() => handleRect(post.id, "DISLIKE")}
-          className="action-button"
+          onClick={() => handleReact(post.id, "DISLIKE")}
+          className={`action-button ${isLoading ? "disabled" : ""}`}
+          disabled={isLoading}
         >
           <FontAwesomeIcon icon={faThumbsDown} />
           <span>{dislikes}</span>
         </button>
         <button
-          className="action-button"
+          className={`action-button ${isLoading ? "disabled" : ""}`}
+          disabled={isLoading}
           onClick={() => {
             getComments(post.id);
             setIsCommentSectionOpen(!isCommentSectionOpen);
@@ -292,13 +331,13 @@ export function Post({ post }) {
                 })
               }
             />
-            {/* oriax */}
             <input
               className="comment-input-file"
               type="file"
               id="postImage"
               onChange={handleImageChange}
               accept="image/*"
+              disabled={isLoading}
             />
             <label htmlFor="postImage" className="comment-input-file-label">
               <FontAwesomeIcon icon={faImage} />
@@ -306,7 +345,7 @@ export function Post({ post }) {
             <button
               type="submit"
               className="comment-submit"
-              disabled={!formComments.content.trim()}
+              disabled={!formComments.content.trim() || isLoading}
             >
               <FontAwesomeIcon icon={faPaperPlane} />
             </button>
@@ -346,19 +385,21 @@ export function Post({ post }) {
                       />
                     </div>
                   )}
-
                 </div>
                 <div className="comment-actions">
-                  <button className="action-button"
+                  <button 
+                    className={`action-button ${isLoading ? "disabled" : ""}`}
+                    disabled={isLoading}
                     onClick={() => {
                       getCurrent(comment.id, "LIKE");
-                      
                     }}
                   >
                     <FontAwesomeIcon icon={faThumbsUp} />
                     <span>{comment.likes}</span>
                   </button>
-                  <button className="action-button"
+                  <button 
+                    className={`action-button ${isLoading ? "disabled" : ""}`}
+                    disabled={isLoading}
                     onClick={() => {
                       getCurrent(comment.id, "DISLIKE");
                     }}
@@ -381,33 +422,98 @@ export function PostList() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const loadMoreRef = useRef(null);
 
-  useEffect(() => {
-    async function fetchPosts() {
-      const data = await fetchUserInfo("api/post/getAll");
-      if (data) {
-        setPosts(data);
+  // Throttled fetch posts function
+  const fetchPosts = throttle(async (pageNum) => {
+    if (isFetching || !hasMore) return;
+    
+    setIsFetching(true);
+    try {
+      const data = await fetchUserInfo(`api/post/getAll?offset=${pageNum}`);
+      if (data && data.length > 0) {
+        if (pageNum === 1) {
+          setPosts(data);
+        } else {
+          setPosts(prevPosts => [...prevPosts, ...data]);
+        }
+        setPage(pageNum + 1);
       } else {
-        setError("Failed to fetch posts");
+        setHasMore(false);
       }
+    } catch (error) {
+      setError("Failed to fetch posts");
+    } finally {
       setLoading(false);
+      setIsFetching(false);
     }
-    fetchPosts();
+  }, 1000); // 1000ms throttle delay
+
+  // Initial load
+  useEffect(() => {
+    fetchPosts(1);
   }, []);
 
-  if (loading) return <p>Loading posts...</p>;
+  // Infinite scroll setup
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !isFetching) {
+          fetchPosts(page);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+    
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [hasMore, isFetching, page]);
+
+  if (loading && posts.length === 0) return <p>Loading posts...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="post-list">
       {posts.length > 0 ? (
-        posts.map((post) => <Post key={post.id} post={post} />)
+        <>
+          {posts.map((post) => <Post key={post.id} post={post} />)}
+          <div ref={loadMoreRef} className="load-more">
+            {isFetching && <p>Loading more posts...</p>}
+          </div>
+        </>
       ) : (
         <p>No posts available.</p>
       )}
     </div>
-
   );
+}
+
+// Add CSS styles for disabled buttons
+const styleElement = typeof document !== 'undefined' ? document.createElement('style') : null;
+if (styleElement) {
+  styleElement.textContent = `
+    .action-button.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .load-more {
+      text-align: center;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+  `;
+  document.head.appendChild(styleElement);
 }
 
 // ******** Post container: a function that displays a form to create a new post **********//
@@ -422,6 +528,7 @@ export function PostContainer() {
   const [imagePreview, setImagePreview] = useState(null);
   const modalRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [targetedFriends, setTargetedFriends] = useState(null);
 
@@ -429,8 +536,6 @@ export function PostContainer() {
   const [showFriendsModal, setShowFriendsModal] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const friendsModalRef = useRef(null);
-
-
 
   // Add this function to handle friend selection
   const handleFriendSelection = (friendId) => {
@@ -478,10 +583,24 @@ export function PostContainer() {
     }
   };
 
-  // Handle post submission logic here
-  const handleSubmit = async (e) => {
+  // Throttled fetch friends function
+  const fetchFriendshandler = throttle(async () => {
+    try {
+      const response = await fetchUserInfo(
+        `api/users/userfollowers?profileId=0`
+      );
+      setTargetedFriends(response);
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+    }
+  }, 1000);
+
+  // Throttled post submission
+  const handleSubmit = throttle(async (e) => {
     e.preventDefault();
-    //   console.log("Post data:", { ...formData, image: imagePreview });
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
       const newPostForm = new FormData();
 
@@ -514,20 +633,11 @@ export function PostContainer() {
         console.log(response.status);
       }
     } catch (error) {
-      console.error("Error during login:", error);
+      console.error("Error during post creation:", error);
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const fetchFriendshandler = async () => {
-    try {
-      const response = await fetchUserInfo(
-        `api/users/userfollowers?profileId=0`
-      );
-      setTargetedFriends(response);
-    } catch (error) {
-      console.error("Error fetching friends:", error);
-    }
-  };
+  }, 1000);
 
   useEffect(() => {
     fetchFriendshandler();
@@ -539,7 +649,7 @@ export function PostContainer() {
         <div className="trigger-input">What's on your mind?</div>
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && ( 
         <div className="modal-overlay">
           <div className="create-post-modal" ref={modalRef}>
             <div className="modal-header">
@@ -563,8 +673,9 @@ export function PostContainer() {
                     className="file-input"
                     ref={fileInputRef}
                     id="image-upload"
+                    disabled={isSubmitting}
                   />
-                  <label htmlFor="image-upload" className="upload-labels">
+                  <label htmlFor="image-upload" className={`upload-labels ${isSubmitting ? "disabled" : ""}`}>
                     <svg
                       width="24"
                       height="24"
@@ -595,6 +706,7 @@ export function PostContainer() {
                       type="button"
                       className="remove-image"
                       onClick={removeImage}
+                      disabled={isSubmitting}
                     >
                       ×
                     </button>
@@ -615,6 +727,7 @@ export function PostContainer() {
                   }
                   className="form-input"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -630,6 +743,7 @@ export function PostContainer() {
                   }
                   className="form-textarea"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -646,6 +760,7 @@ export function PostContainer() {
                         privacy: e.target.value,
                       })
                     }
+                    disabled={isSubmitting}
                   />
                   <span className="radio-custom"></span>
                   Public
@@ -662,6 +777,7 @@ export function PostContainer() {
                         privacy: e.target.value,
                       })
                     }
+                    disabled={isSubmitting}
                   />
                   <span className="radio-custom"></span>
                   Private
@@ -670,11 +786,12 @@ export function PostContainer() {
               <div className="target-friends-section">
                 <button
                   type="button"
-                  className="target-friends-button"
+                  className={`target-friends-button ${isSubmitting ? "disabled" : ""}`}
                   onClick={() => {
                     fetchFriendshandler();
                     setShowFriendsModal(true);
                   }}
+                  disabled={isSubmitting}
                 >
                   Target Friends
                 </button>
@@ -700,10 +817,8 @@ export function PostContainer() {
                             type="checkbox"
                             checked={selectedFriends.includes(friend.Id)}
                             onChange={() => handleFriendSelection(friend.Id)}
+                            disabled={isSubmitting}
                           />
-                          {/* <div className="friend-avatar">
-                              <img src={friend.avatar} alt={friend.FirstName} />
-                            </div> */}
                           <span className="friend-name">
                             {friend.FirstName + " " + friend.LastName}
                           </span>
@@ -713,11 +828,12 @@ export function PostContainer() {
 
                     <div className="friends-modal-footer">
                       <button
-                        className="confirm-selection"
+                        className={`confirm-selection ${isSubmitting ? "disabled" : ""}`}
                         onClick={() => {
                           console.log("Selected friends:", selectedFriends);
                           setShowFriendsModal(false);
                         }}
+                        disabled={isSubmitting}
                       >
                         Confirm Selection
                       </button>
@@ -725,8 +841,12 @@ export function PostContainer() {
                   </div>
                 </div>
               )}
-              <button type="submit" className="submit-button">
-                Create Post
+              <button 
+                type="submit" 
+                className={`submit-button ${isSubmitting ? "disabled" : ""}`}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Creating Post..." : "Create Post"}
                 <div className="button-glow"></div>
               </button>
             </form>

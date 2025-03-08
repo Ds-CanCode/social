@@ -1,6 +1,7 @@
 package funcs
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -27,6 +28,7 @@ func Post(w http.ResponseWriter, r *http.Request) {
 
 	err = InsertPost(post)
 	if err != nil {
+		fmt.Println("err", err)
 		pkg.SendResponseStatus(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -40,12 +42,23 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 		pkg.SendResponseStatus(w, http.StatusUnauthorized, err)
 		return
 	}
+	query := r.URL.Query()
+
+	offset, _ := strconv.Atoi(query.Get("offset"))
+	if offset < 0 {
+		pkg.SendResponseStatus(w, http.StatusBadRequest, pkg.ErrInvalidNamber)
+		return
+	}
+	fmt.Println(offset)
 	var posts []POST
-	posts, err = getFeedPosts(id)
+	posts, err = getFeedPosts(id, offset )
 	if err != nil {
+		fmt.Println(err )
 		pkg.SendResponseStatus(w, http.StatusInternalServerError, err)
 		return
 	}
+
+	fmt.Println(posts)
 	err = pkg.Encode(w, &posts)
 	if err != nil {
 		pkg.SendResponseStatus(w, http.StatusInternalServerError, pkg.ErrInvalidNamber)
