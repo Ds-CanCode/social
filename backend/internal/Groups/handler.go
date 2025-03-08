@@ -239,6 +239,7 @@ func AcceptRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !isCreator {
+		fmt.Println("err1", err)
 		pkg.SendResponseStatus(w, http.StatusBadRequest, pkg.ErrNotCreator)
 		return
 	}

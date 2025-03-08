@@ -435,7 +435,7 @@ export function PostList() {
     try {
       const data = await fetchUserInfo(`api/post/getAll?offset=${pageNum}`);
       if (data && data.length > 0) {
-        if (pageNum === 1) {
+        if (pageNum === 0) {
           setPosts(data);
         } else {
           setPosts(prevPosts => [...prevPosts, ...data]);
@@ -454,7 +454,7 @@ export function PostList() {
 
   // Initial load
   useEffect(() => {
-    fetchPosts(1);
+    fetchPosts(0);
   }, []);
 
   // Infinite scroll setup

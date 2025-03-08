@@ -87,7 +87,7 @@ export default function Groups() {
                 </div>
 
                 <div className="groups-grid">
-                    {groups.length === 0 ? (
+                    {groups.length === 0  || !groups ? (
                         <p>No groups found. Join or create a group to get started!</p>
                     ) : (
                         groups.map((group) => (

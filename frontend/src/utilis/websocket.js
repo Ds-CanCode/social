@@ -33,10 +33,18 @@ export function WebSocketProvider({ children }) {
         setSocket(null);
       })
 
-      newSocket.addEventListener("message", (event) =>
-        handleNotif(event)
-      );
+      // newSocket.addEventListener("message", (event) =>
+      //   handleNotif(event)
+      // );
+      newSocket.addEventListener("message", (event) => {
+        handleNotif(event);
+        const data = JSON.parse(event.data);
 
+        if (data.Type !== "follow" && data.Type !== "groupRequest" && data.Type !== "groupInvitation") {
+          showPopupNotification("you have a new message");
+        }
+      });
+      
       // Cleanup on unmount
     }
   }, [path]);

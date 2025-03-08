@@ -22,7 +22,6 @@ func InsertPost(post POST) error {
 	VALUES(?,?,?,?,?,?,?)`
 	result, err := tx.Exec(query, post.Creator.Id, post.GroupId, post.Title, post.Content, post.Path, post.Type, time.Now())
 	if err != nil {
-		fmt.Println(err)
 		tx.Rollback()
 		return err
 	}
